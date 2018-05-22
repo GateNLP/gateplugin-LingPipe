@@ -1,4 +1,4 @@
-<project name="LingPipe" default="dist" basedir=".">
+<project name="LingPipe" default="jar" basedir="." xmlns:if="ant:if">
   <description>
     GATE Resources for LingPipe
   </description>
@@ -19,16 +19,28 @@
   <property name="gate.lib" location="${gate.home}/lib" />
   <property name="gate.compile.maxwarnings" value="10000" />
 
-  <path id="classpath">
+   <available property="gate.lib.exists" file="${gate.lib}" />
+  <loadfile property="gate.classpath.content" srcFile="${gate.home}/gate.classpath" failonerror="false"/>
+
+  <!-- Path to compile - includes gate.jar and GATE/lib/*.jar -->
+  <path id="gate.classpath" if:set="gate.lib.exists">
     <pathelement location="${gate.jar}" />
     <fileset dir="${gate.lib}">
       <include name="**/*.jar" />
       <include name="**/*.zip" />
     </fileset>
-    <fileset dir="lib"> 
+  </path>
+
+  <path id="gate.classpath" if:set="gate.classpath.content" path="${gate.classpath.content}" />
+
+
+  <path id="classpath">
+    <fileset dir="lib">
       <include name="*.jar"/>
     </fileset>
-  </path> 
+    <path refid="gate.classpath" />
+  </path>
+
 
 
   <target name="init">
@@ -41,7 +53,7 @@
   <target name="compile" depends="init"
 	  description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}" debug="true" source="1.6" target="1.6">
+    <javac srcdir="${src}" destdir="${build}" debug="true" source="1.8" target="1.8">
       <classpath refid="classpath"/>
       <compilerarg value="-Xmaxwarns" />
       <compilerarg value="${gate.compile.maxwarnings}" />
@@ -59,21 +71,18 @@
              classpathref="classpath"
              encoding="UTF-8"
              windowtitle="${plugin.name} JavaDoc"
-             source="1.6">
+             source="1.8">
       <sourcepath>
         <pathelement location="${src}" />
       </sourcepath>
-      <link href="http://docs.oracle.com/javase/6/docs/api/" />
+      <link href="http://docs.oracle.com/javase/8/docs/api/" />
       <link href="http://gate.ac.uk/gate/doc/javadoc/" />
     </javadoc>
   </target>
 
 
-  <target name="dist" depends="compile"
+  <target name="jar" depends="compile"
 	  description="generate the distribution" >
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}/lib"/>
-
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
     <jar jarfile="${jar.location}" basedir="${build}"/>
   </target>
@@ -91,7 +100,7 @@
   </target>
 
   <!-- Targets used by the main GATE build file -->
-  <target name="build" depends="dist" />
+  <target name="build" depends="jar" />
   <target name="test" />
   <target name="distro.prepare" depends="clean.classes" />
 </project>

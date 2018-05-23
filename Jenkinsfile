@@ -4,14 +4,10 @@ pipeline {
         // rebuild this plugin if gate-top gets rebuilt so we can check we haven't introduced a breaking change
         upstream(upstreamProjects: "gate-top", threshold: hudson.model.Result.SUCCESS)
     }
-    tools { 
-
-        jdk 'JDK1.8' 
-    }
     stages {
        stage('Build') {
             steps {
-                withAnt(installation: 'ANT-HUDSON') {
+                withAnt(installation: 'ANT-1.9.7', jdk: 'JDK1.8') {
                     sh 'ant clean build'
                 }
             }
@@ -21,7 +17,7 @@ pipeline {
                 expression { currentBuild.result != "FAILED" }
             }
             steps {
-                withAnt(installation: 'ANT-HUDSON') {
+                withAnt(installation: 'ANT-1.9.7', jdk: 'JDK1.8') {
                     sh 'ant test javadoc'
                 }
             }

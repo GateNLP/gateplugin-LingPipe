@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<CREOLE-DIRECTORY NAME="LingPipe" VERSION="8.5-SNAPSHOT" DESCRIPTION="Support for using LingPipe within GATE">
+<CREOLE-DIRECTORY NAME="LingPipe" VERSION="8.5" DESCRIPTION="Support for using LingPipe within GATE">
   <CREOLE>   
     <!-- creole.xml for LingPipe resources -->
     <RESOURCE>
